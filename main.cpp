@@ -21,7 +21,13 @@ int main() {
     std::cout << "y: ";
     y.print();
 
-    
+
+    Set<int> k = intersec_set(x, y);
+    k.print();
+
+    Set<int> z = difference_set(x, y);
+    z.print();
+
     return 0;
 
 }
