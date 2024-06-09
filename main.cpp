@@ -18,15 +18,17 @@ int main() {
 
     cout << "x: ";
     x.print();
-    std::cout << "y: ";
+    cout << "y: ";
     y.print();
 
 
-    Set<int> k = intersec_set(x, y);
-    k.print();
-
-    Set<int> z = difference_set(x, y);
+    Set<int> z = x.set_inter(y);
+    cout << "z: ";
     z.print();
+
+    Set<int> k = x.set_diff(y);
+    cout << "k: ";
+    k.print();
 
     return 0;
 

@@ -39,6 +39,7 @@ private:
 		clear(cur->left);
 		clear(cur->right);
 		delete cur;
+		cur = nullptr;
 	}
 
 	void print(Node<T>* cur) {
@@ -47,6 +48,24 @@ private:
 			cout << cur->val << " ";
 			print(cur->right);
 		}
+	}
+
+	
+	void add_inter(Node<T>* node, Set<T>& other, Set<T>& set) {
+		if (!node) { return; }
+		if (other.contains(node->val)) {
+			set.insert(node->val);
+		}
+		add_inter(node->left, other, set);
+		add_inter(node->right, other, set);
+	}
+	void add_diff(Node<T>* node, Set<T>& other, Set<T>& set) {
+		if (!node) { return; }
+		if (!other.contains(node->val)) {
+			set.insert(node->val);
+		}
+		add_diff(node->left, other, set);
+		add_diff(node->right, other, set);
 	}
 
 	bool insert(Node<T>*& node, T key) {
@@ -104,6 +123,7 @@ public:
 
 	~Set() {
 		clear(_root);
+		_root = nullptr;
 	}
 
 	Set<T>& operator = (Set<T> other) {
@@ -111,10 +131,7 @@ public:
 		return *this;
 	}
 
-	Node<T>* get_root() const {
-		return _root;
-	}
-
+	
 	void print() {
 		print(_root);
 		cout << endl;
@@ -130,6 +147,19 @@ public:
 
 	bool erase(T key) {
 		return erase(_root, key);
+	}
+
+	
+	Set<T> set_inter(Set<T>& other) {
+		Set<T> set;
+		add_inter(_root, other, set);
+		return set;
+	}
+	Set<T> set_diff(Set<T>& other) {
+		Set<T> set;
+		add_diff(_root, other, set);
+		add_diff(other._root, *this, set);
+		return set;
 	}
 };
 
@@ -148,40 +178,3 @@ int random_seed(int a, int b, int seed) {
 	return x;
 }
 
-template<typename T>
-void add_new_items(Set<T>& set, Node<T>* node) {
-	if (node) {
-		add_new_items(set, node->left);
-		if (!(set.contains(node->val))) set.insert(node->val);
-		add_new_items(set, node->right);
-	}
-}
-
-template<typename T>
-Set<T> union_set(Set<T>& set1, Set<T>& set2) {
-	Set<T> set(set1);
-	add_new_items(set, set2.get_root());
-	return set;
-}
-
-template<typename T>
-void delete_identical_items(Set<T>& set, Node<T>* node) {
-	if (node) {
-		delete_identical_items(set, node->left);
-		if (set.contains(node->val)) set.erase(node->val);
-		delete_identical_items(set, node->right);
-	}
-}
-
-template<typename T>
-Set<T> difference_set(Set<T>& set1, Set<T>& set2) {
-	Set<T> set(set1);
-	delete_identical_items(set, set2.get_root());
-	return set;
-}
-
-template<typename T>
-Set<T> intersec_set(Set<T>& set1, Set<T>& set2) {
-	Set<T> res = difference_set(set1, set2);
-	return difference_set(set1, res);
-}
